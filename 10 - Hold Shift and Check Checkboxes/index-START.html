@@ -99,6 +99,32 @@
   </div>
 
 <script>
+const checkboxes = document.querySelectorAll('.item > input[type="checkbox"]');
+let lastCheckedBox = null;
+
+const isShiftKey = e => e.keyCode === 16;
+const checkBoxesFrom = (start, end) => {
+  checkboxes.forEach((box, index) => {
+    if (index >= start && index <= end) {
+      box.checked = true;
+    }
+  });
+};
+
+const changeCheckbox = index => e => {
+  if (!e.shiftKey || !e.target.checked) return;
+  if (lastCheckedBox !== null) {
+    checkBoxesFrom(
+      Math.min(index, lastCheckedBox),
+      Math.max(index, lastCheckedBox)
+    );
+  }
+  lastCheckedBox = index;
+};
+
+checkboxes.forEach((checkbox, index) =>
+  checkbox.addEventListener("click", changeCheckbox(index))
+);
 </script>
 </body>
 </html>
