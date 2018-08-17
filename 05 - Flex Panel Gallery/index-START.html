@@ -24,6 +24,7 @@
     .panels {
       min-height:100vh;
       overflow: hidden;
+      display: flex;
     }
 
     .panel {
@@ -41,6 +42,11 @@
       font-size: 20px;
       background-size:cover;
       background-position:center;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
     }
 
 
@@ -54,6 +60,24 @@
       margin:0;
       width: 100%;
       transition:transform 0.5s;
+      flex: 1 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .panel > *:first-child {
+      transform: translateY(-100%);
+    }
+
+    .panel > *:last-child {
+      transform: translateY(100%);
+    }
+
+
+    .panel.open-active > *:first-child,
+    .panel.open-active > *:last-child {
+      transform: translateY(0);
     }
 
     .panel p {
@@ -68,6 +92,7 @@
 
     .panel.open {
       font-size:40px;
+      flex: 5;
     }
 
   </style>
@@ -102,7 +127,29 @@
   </div>
 
   <script>
+    const panels = document.querySelectorAll('.panels .panel');
 
+    const openPanel = toggledPanel => {
+      panels.forEach(panel => {
+        if (panel === toggledPanel) {
+          panel.classList.toggle('open');
+        } else {
+          panel.classList.remove('open');
+          panel.classList.remove('open-active');
+        }
+      });
+    };
+
+    const markAsOpenActive = e => {
+      if (e.propertyName.includes('flex') && e.target.classList.contains('open')) {
+        e.target.classList.add('open-active');
+      }
+    }
+
+    panels.forEach(panel => {
+      panel.addEventListener('click', e => openPanel(e.target));
+      panel.addEventListener('transitionend', markAsOpenActive);
+    });
   </script>
 
 
