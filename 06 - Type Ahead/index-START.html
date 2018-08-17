@@ -15,8 +15,50 @@
     </ul>
   </form>
 <script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+const endpoint =
+  "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
+let cities = [];
 
+const suggestions = document.querySelector(".suggestions");
+
+function findMatches(cities, searchInput) {
+  const regex = new RegExp(searchInput, "gi");
+  return cities.filter(
+    place => regex.test(place.city) || regex.test(place.state)
+  );
+}
+
+function numberWithCommas(number) {
+  if (number >= 1000) {
+    return `${numberWithCommas(Math.floor(number / 1000))},${((number % 1000) + '').padStart(3, '0')}`;
+  }
+  return number;
+}
+
+function displayMatches() {
+  const matches = findMatches(cities, this.value);
+  const regex = new RegExp(this.value, "gi");
+  const html = matches
+    .map(match => {
+      const cityName = match.city.replace(regex, `<span class="hl">${this.value}</span>`);
+      return `<li>
+      <span class="name">${cityName}, ${match.state}</span>
+      <span class="population">${numberWithCommas(match.population)}</span>
+    </li>`;
+    })
+    .join("");
+  suggestions.innerHTML = html;
+}
+
+fetch(endpoint, { method: "GET" })
+  .then(response => response.json())
+  .then(newCities => {
+    cities.push(...newCities);
+  });
+
+const searchInput = document.querySelector(".search");
+searchInput.addEventListener("change", displayMatches);
+searchInput.addEventListener("keyup", displayMatches);
 </script>
   </body>
 </html>
